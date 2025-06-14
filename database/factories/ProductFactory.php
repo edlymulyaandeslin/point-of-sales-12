@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +17,21 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $lenght_categories = Category::count();
         return [
-            //
+            "category_id" => mt_rand(1, $lenght_categories),
+            "name" => fake()->randomElement([
+                'Teh Botol Sosro',
+                'Indomie Goreng',
+                'Sabun Lifebuoy',
+                'Rinso Deterjen 1kg',
+                'Aqua 600ml',
+                'Kopi Kapal Api',
+                'Susu Bendera Coklat',
+                'Minyak Goreng Bimoli 1L'
+            ]),
+            "price" => fake()->randomFloat(2, 5000, 500000),
+            "stock" => fake()->numberBetween(10, 100),
         ];
     }
 }

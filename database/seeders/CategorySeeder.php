@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Category;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class CategorySeeder extends Seeder
 {
@@ -12,6 +13,11 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $base_categories = ["makanan", "minuman"];
+        foreach ($base_categories as $category) {
+            Category::create([
+                "name" => $category
+            ]);
+        }
     }
 }

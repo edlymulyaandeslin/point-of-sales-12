@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('purchase_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId("purchase_id")->constrained("purchases")->cascadeOnDelete();
-            $table->integer("qty");
+            $table->foreignId("product_id")->constrained("products");
             $table->float("price");
+            $table->integer("qty");
+            $table->float("subtotal");
             $table->timestamps();
         });
     }

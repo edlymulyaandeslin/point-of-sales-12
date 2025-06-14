@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Post;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,15 +14,33 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Post::create([
-            'title' => 'First Post',
-            'slug' => 'first-post',
-            'description' => 'This is the first post'
+        // Initialize role admin and kasir
+        $admin = Role::create(["name" => "admin"]);
+        $kasir = Role::create(["name" => "kasir"]);
+
+        $admin_user = User::factory()->create([
+            "name" => "Edly Mulya Ands",
+            "email" => "super@gmail.com",
         ]);
-        Post::create([
-            'title' => 'Second Post',
-            'slug' => 'second-post',
-            'description' => 'This is the second post'
+        $kasir_user = User::factory()->create([
+            "name" => "Kasir Ands",
+            "email" => "kasir@gmail.com",
+        ]);
+
+        $admin_user->syncRoles($admin);
+        $kasir_user->syncRoles($kasir);
+
+        $this->call([
+            CustomerSeeder::class,
+            SupplierSeeder::class,
+            CategorySeeder::class,
+            ProductSeeder::class,
+            PurchaseSeeder::class,
+            PurchaseDetailSeeder::class,
+            InventorySeeder::class,
+            TransactionSeeder::class,
+            TransactionDetailSeeder::class,
+            PaymentSeeder::class,
         ]);
     }
 }

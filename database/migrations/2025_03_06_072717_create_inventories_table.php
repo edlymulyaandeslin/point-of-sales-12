@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
             $table->foreignId("product_id")->constrained("products")->cascadeOnDelete();
+            $table->integer("qty");
             $table->enum("type", [
                 Inventory::TYPE_IN,
                 Inventory::TYPE_OUT

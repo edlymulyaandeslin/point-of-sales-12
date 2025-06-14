@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Payment;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,8 +18,12 @@ class PaymentFactory extends Factory
      */
     public function definition(): array
     {
+        $length_transactions = Transaction::count();
+
         return [
-            //
+            "transaction_id" => mt_rand(1, $length_transactions),
+            "method" => fake()->randomElement([Payment::CASH, Payment::QRIS]),
+            "amount" => fake()->numberBetween(100000, 200000)
         ];
     }
 }
