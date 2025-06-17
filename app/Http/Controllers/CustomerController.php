@@ -11,11 +11,19 @@ class CustomerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $customers = Customer::all();
+        $query = Customer::query();
+
+        if ($search = $request->search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $customers = $query->latest()->paginate(10)->withQueryString();
+
         return Inertia::render("customers/index", [
-            "customers" => $customers
+            "customers" => $customers,
+            "search" => $request->search
         ]);
     }
 
@@ -24,7 +32,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render("customers/create");
     }
 
     /**
@@ -32,7 +40,14 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data_input = $request->validate([
+            "name" => "required",
+            "phone" => "required|numeric|max_digits:13",
+        ]);
+
+        Customer::create($data_input);
+
+        return redirect()->route("customers.index")->with("success", "Customer berhasil ditambahkan.");
     }
 
     /**
@@ -48,7 +63,9 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
-        //
+        return Inertia::render('customers/edit', [
+            'customer' => $customer
+        ]);
     }
 
     /**
@@ -56,7 +73,23 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        //
+        $rules = [
+            'name' => 'max:20',
+            'phone' => 'numeric|max_digits:13',
+        ];
+
+        $validate_data = $request->validate($rules);
+
+        if (!$request->name) {
+            $validate_data['name'] = $customer->name;
+        }
+        if (!$request->phone) {
+            $validate_data['phone'] = $customer->phone;
+        }
+
+        $customer->update($validate_data);
+
+        return redirect()->route('customers.index')->with('success', 'Customer berhasil diperbarui!');
     }
 
     /**
@@ -64,6 +97,8 @@ class CustomerController extends Controller
      */
     public function destroy(Customer $customer)
     {
-        //
+        $customer->delete();
+
+        return redirect()->route('customers.index')->with('success', 'Customer Berhasil Dihapus!');
     }
 }

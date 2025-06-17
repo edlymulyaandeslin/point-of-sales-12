@@ -30,7 +30,7 @@ class ProductFactory extends Factory
                 'Susu Bendera Coklat',
                 'Minyak Goreng Bimoli 1L'
             ]),
-            "price" => fake()->randomFloat(2, 5000, 500000),
+            "price" => fake()->numberBetween(5000, 50000),
             "stock" => fake()->numberBetween(10, 100),
         ];
     }

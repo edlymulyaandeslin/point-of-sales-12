@@ -13,7 +13,10 @@ class PurchaseController extends Controller
      */
     public function index()
     {
-        return Inertia::render("purchases/index");
+        $purchases = Purchase::with(["user", "supplier"])->get();
+        return Inertia::render("purchases/index", [
+            "purchases" => $purchases
+        ]);
     }
 
     /**

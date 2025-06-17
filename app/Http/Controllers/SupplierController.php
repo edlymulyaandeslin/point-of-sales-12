@@ -11,9 +11,20 @@ class SupplierController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Inertia::render("suppliers/index");
+        $query = Supplier::query();
+
+        if ($search = $request->search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $suppliers = $query->latest()->paginate(10)->withQueryString();
+
+        return Inertia::render("suppliers/index", [
+            "suppliers" => $suppliers,
+            "search" => $request->search
+        ]);
     }
 
     /**
@@ -21,7 +32,7 @@ class SupplierController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render("suppliers/create");
     }
 
     /**
@@ -29,13 +40,20 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data_input = $request->validate([
+            "name" => "required",
+            "phone" => "required|numeric|max_digits:13",
+        ]);
+
+        Supplier::create($data_input);
+
+        return redirect()->route("suppliers.index")->with("success", "Supplier berhasil ditambahkan.");
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Supplier $supplier)
+    public function show(Supplier $Supplier)
     {
         //
     }
@@ -45,7 +63,9 @@ class SupplierController extends Controller
      */
     public function edit(Supplier $supplier)
     {
-        //
+        return Inertia::render('suppliers/edit', [
+            'supplier' => $supplier
+        ]);
     }
 
     /**
@@ -53,7 +73,23 @@ class SupplierController extends Controller
      */
     public function update(Request $request, Supplier $supplier)
     {
-        //
+        $rules = [
+            'name' => 'max:20',
+            'phone' => 'numeric|max_digits:13',
+        ];
+
+        $validate_data = $request->validate($rules);
+
+        if (!$request->name) {
+            $validate_data['name'] = $supplier->name;
+        }
+        if (!$request->phone) {
+            $validate_data['phone'] = $supplier->phone;
+        }
+
+        $supplier->update($validate_data);
+
+        return redirect()->route('suppliers.index')->with('success', 'Supplier berhasil diperbarui!');
     }
 
     /**
@@ -61,6 +97,8 @@ class SupplierController extends Controller
      */
     public function destroy(Supplier $supplier)
     {
-        //
+        $supplier->delete();
+
+        return redirect()->route('suppliers.index')->with('success', 'Supplier Berhasil Dihapus!');
     }
 }
