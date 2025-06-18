@@ -37,7 +37,6 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             PurchaseSeeder::class,
             PurchaseDetailSeeder::class,
-            InventorySeeder::class,
             TransactionSeeder::class,
             TransactionDetailSeeder::class,
             PaymentSeeder::class,

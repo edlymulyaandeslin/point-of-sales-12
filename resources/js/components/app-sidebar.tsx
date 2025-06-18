@@ -21,7 +21,7 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Customers',
         url: '/customers',
-        icon: Users,
+        icon: UserPlus,
     },
     {
         title: 'Categories',

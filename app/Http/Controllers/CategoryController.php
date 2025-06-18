@@ -11,11 +11,19 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::all();
+        $query = Category::query();
+
+        if ($search = $request->search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $categories = $query->latest()->paginate(10)->withQueryString();
+
         return Inertia::render("categories/index", [
-            "categories" => $categories
+            "categories" => $categories,
+            "search" => $request->search
         ]);
     }
 
@@ -24,7 +32,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render("categories/create");
     }
 
     /**
@@ -32,7 +40,13 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data_input = $request->validate([
+            "name" => "required",
+        ]);
+
+        Category::create($data_input);
+
+        return redirect()->route("categories.index")->with("success", "Category berhasil ditambahkan.");
     }
 
     /**
@@ -48,7 +62,9 @@ class CategoryController extends Controller
      */
     public function edit(Category $category)
     {
-        //
+        return Inertia::render('categories/edit', [
+            'category' => $category
+        ]);
     }
 
     /**
@@ -56,7 +72,21 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        $rules = [];
+
+        if ($request->name) {
+            $rules['name'] = 'required';
+        }
+
+        $validate_data = $request->validate($rules);
+
+        if (!$request->name) {
+            $validate_data['name'] = $category->name;
+        }
+
+        $category->update($validate_data);
+
+        return redirect()->route('categories.index')->with('success', 'Category berhasil diperbarui!');
     }
 
     /**
@@ -64,6 +94,8 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $category->delete();
+
+        return redirect()->route('categories.index')->with('success', 'Category Berhasil Dihapus!');
     }
 }

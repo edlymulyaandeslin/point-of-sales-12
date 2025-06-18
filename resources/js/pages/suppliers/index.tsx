@@ -105,7 +105,7 @@ export default function Index({ suppliers }: { suppliers: PaginatedData<Supplier
                                             setSelectedSupplier(Supplier);
                                             setOpenDetailModal(true);
                                         }}
-                                        className="inline-flex items-center rounded-md bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
+                                        className="inline-flex cursor-pointer items-center rounded-md bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800"
                                     >
                                         Lihat
                                     </button>
@@ -120,7 +120,7 @@ export default function Index({ suppliers }: { suppliers: PaginatedData<Supplier
                                             setSelectedSupplier(Supplier);
                                             setOpenDeleteModal(true);
                                         }}
-                                        className="inline-flex items-center rounded-md bg-red-100 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800"
+                                        className="inline-flex cursor-pointer items-center rounded-md bg-red-100 px-3 py-1 text-xs font-medium text-red-700 hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800"
                                     >
                                         Hapus
                                     </button>
