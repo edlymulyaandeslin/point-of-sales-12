@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -11,11 +12,19 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with("category")->get();
+        $query = Product::with('category');
+
+        if ($search = $request->search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        $products = $query->latest()->paginate(10)->withQueryString();
+
         return Inertia::render("products/index", [
-            "products" => $products
+            "products" => $products,
+            "search" => $request->search
         ]);
     }
 
@@ -24,7 +33,10 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::all();
+        return Inertia::render("products/create", [
+            'categories' => $categories
+        ]);
     }
 
     /**
@@ -32,7 +44,16 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data_input = $request->validate([
+            "category_id" => "required",
+            "name" => "required",
+            "price" => "required|numeric",
+            "stock" => "required|numeric",
+        ]);
+
+        Product::create($data_input);
+
+        return redirect()->route("products.index")->with("success", "Product berhasil ditambahkan.");
     }
 
     /**
@@ -48,7 +69,11 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        $categories = Category::all();
+        return Inertia::render('products/edit', [
+            'product' => $product,
+            'categories' => $categories
+        ]);
     }
 
     /**
@@ -56,7 +81,18 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $rules = [
+            "category_id" => "required",
+            "name" => "required",
+            "price" => "required|numeric",
+            "stock" => "required|numeric",
+        ];
+
+        $validate_data = $request->validate($rules);
+
+        $product->update($validate_data);
+
+        return redirect()->route('products.index')->with('success', 'Product berhasil diperbarui!');
     }
 
     /**
@@ -64,6 +100,8 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
+
+        return redirect()->route('products.index')->with('success', 'Product Berhasil Dihapus!');
     }
 }

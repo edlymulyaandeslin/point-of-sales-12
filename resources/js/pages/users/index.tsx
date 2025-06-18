@@ -123,7 +123,7 @@ export default function Index({ users }: { users: PaginatedData<User> }) {
                         },
                     ]}
                 />
-            </div>
+            </div> 
 
             {/* modal show */}
             <Modal isOpen={open} onClose={() => setOpen(false)} title="Detail Pengguna" size="lg">
@@ -183,7 +183,8 @@ export default function Index({ users }: { users: PaginatedData<User> }) {
                     </div>
                 }
             >
-                Apakah Anda yakin ingin menghapus item ini? Tindakan ini tidak dapat dibatalkan.
+                 Apakah Anda yakin ingin menghapus user <strong className="text-red-600 dark:text-red-400">{selectedUser?.name}</strong>?
+                Tindakan ini tidak dapat dibatalkan.
             </Modal>
         </AppLayout>
     );
