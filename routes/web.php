@@ -8,6 +8,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TransactionController;
 
 Route::get('/', function () {
@@ -15,12 +16,11 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, "index"])->name('dashboard');
+
+    Route::get('transactions/point-of-sales', [TransactionController::class, "pos"])->name('transactions.pos');
 
     Route::resource("users", UserController::class);
-    Route::resource("customers", CustomerController::class);
     Route::resource("categories", CategoryController::class);
     Route::resource("products", ProductController::class);
     Route::resource("transactions", TransactionController::class);

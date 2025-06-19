@@ -20,16 +20,7 @@ class ProductFactory extends Factory
         $lenght_categories = Category::count();
         return [
             "category_id" => mt_rand(1, $lenght_categories),
-            "name" => fake()->randomElement([
-                'Teh Botol Sosro',
-                'Indomie Goreng',
-                'Sabun Lifebuoy',
-                'Rinso Deterjen 1kg',
-                'Aqua 600ml',
-                'Kopi Kapal Api',
-                'Susu Bendera Coklat',
-                'Minyak Goreng Bimoli 1L'
-            ]),
+            "name" => fake()->name(),
             "price" => fake()->numberBetween(5000, 50000),
             "stock" => fake()->numberBetween(10, 100),
         ];

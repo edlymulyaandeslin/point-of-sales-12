@@ -12,27 +12,21 @@ class Transaction extends Model
 
     protected $guarded = [];
 
+    // status
     public const PENDING = "pending";
     public const COMPLETED = "completed";
     public const CANCELLED = "cancelled";
+
+    // payment status
+    public const CASH = "cash";
+    public const QRIS = "qris";
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
-    public function customer()
-    {
-        return $this->belongsTo(User::class);
-    }
-
     public function transaction_details()
     {
         return $this->hasMany(TransactionDetail::class);
-    }
-
-    public function payment()
-    {
-        return $this->hasOne(Payment::class);
     }
 }

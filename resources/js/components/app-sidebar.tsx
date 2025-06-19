@@ -4,49 +4,69 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BaggageClaim, LayoutDashboard, LayoutGrid, ShoppingBasket, ShoppingCart, UserPlus, Users } from 'lucide-react';
+import { BaggageClaim, HandCoins, LayoutDashboard, LayoutGrid, ShoppingBasket, ShoppingCart, UserPlus, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
-const mainNavItems: NavItem[] = [
+const mainNavItems: { label: string; items: NavItem[] }[] = [
     {
-        title: 'Dashboard',
-        url: '/dashboard',
-        icon: LayoutGrid,
+        label: 'General',
+        items: [
+            {
+                title: 'Dashboard',
+                url: '/dashboard',
+                icon: LayoutGrid,
+            },
+            {
+                title: 'Halaman Kasir',
+                url: '/transactions/point-of-sales',
+                icon: HandCoins,
+            },
+        ],
     },
     {
-        title: 'Users',
-        url: '/users',
-        icon: Users,
+        label: 'Master Data',
+        items: [
+            {
+                title: 'Categories',
+                url: '/categories',
+                icon: LayoutDashboard,
+            },
+            {
+                title: 'Products',
+                url: '/products',
+                icon: ShoppingBasket,
+            },
+            {
+                title: 'Suppliers',
+                url: '/suppliers',
+                icon: UserPlus,
+            },
+        ],
     },
     {
-        title: 'Customers',
-        url: '/customers',
-        icon: UserPlus,
+        label: 'Transactions',
+        items: [
+            {
+                title: 'Purchases',
+                url: '/purchases',
+                icon: BaggageClaim,
+            },
+            {
+                title: 'Transactions',
+                url: '/transactions',
+                icon: ShoppingCart,
+            },
+        ],
     },
     {
-        title: 'Categories',
-        url: '/categories',
-        icon: LayoutDashboard,
-    },
-    {
-        title: 'Products',
-        url: '/products',
-        icon: ShoppingBasket,
-    },
-    {
-        title: 'Transactions',
-        url: '/transactions',
-        icon: ShoppingCart,
-    },
-    {
-        title: 'Suppliers',
-        url: '/suppliers',
-        icon: UserPlus,
-    },
-    {
-        title: 'Purchases',
-        url: '/purchases',
-        icon: BaggageClaim,
+        label: 'Akun',
+        items: [
+            {
+                title: 'Users',
+                url: '/users',
+                icon: Users,
+            },
+        ],
     },
 ];
 

@@ -18,7 +18,10 @@ class PurchaseController extends Controller
         $query = Purchase::with(['supplier', 'product']);
 
         if ($search = $request->search) {
-            $query->where('supplier.name', 'like', "%{$search}%");
+            $query->whereHas(
+                'supplier',
+                fn($query) => $query->where('name', 'like', "%{$search}%")
+            )->orWhereHas('product', fn($query) => $query->where('name', 'like', "%{$search}%"));
         }
 
         $purchases = $query->latest()->paginate(10)->withQueryString();

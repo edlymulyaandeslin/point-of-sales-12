@@ -1,38 +1,44 @@
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
-import { DollarSign, ShoppingBag, TrendingUp, Users } from 'lucide-react';
+import { PaginatedData, Transaction, type BreadcrumbItem } from '@/types';
+import { formatPrice, formatSimpleDate, getTransactionStatusStyle } from '@/utils';
+import { Head, Link } from '@inertiajs/react';
+import { DollarSign, ShoppingBag, TrendingUp } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/dashboard' }];
 
-export default function Dashboard() {
+export default function Dashboard({
+    new_transaction,
+    total_penjualan,
+    jumlah_transaksi_today,
+    jumlah_barang_terjual,
+}: {
+    new_transaction: PaginatedData<Transaction>;
+    total_penjualan: number;
+    jumlah_transaksi_today: number;
+    jumlah_barang_terjual: number;
+}) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard POS" />
 
             <div className="p-6">
                 <h2 className="mb-6 text-2xl font-bold">Ringkasan Penjualan</h2>
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {[
                         {
                             icon: <DollarSign className="text-green-600" />,
                             label: 'Total Penjualan',
-                            value: 'Rp 15.200.000',
+                            value: formatPrice(total_penjualan),
                         },
                         {
                             icon: <ShoppingBag className="text-blue-600" />,
                             label: 'Transaksi Hari Ini',
-                            value: '128 Transaksi',
-                        },
-                        {
-                            icon: <Users className="text-yellow-600" />,
-                            label: 'Pelanggan Baru',
-                            value: '32 Pelanggan',
+                            value: `${jumlah_transaksi_today} Transaksi`,
                         },
                         {
                             icon: <TrendingUp className="text-purple-600" />,
                             label: 'Produk Terjual',
-                            value: '524 Barang',
+                            value: `${jumlah_barang_terjual} Barang`,
                         },
                     ].map((item, idx) => (
                         <div
@@ -49,12 +55,6 @@ export default function Dashboard() {
                 </div>
 
                 <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
-                    <div className="rounded-xl border p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-                        <h3 className="mb-4 text-lg font-semibold">Grafik Penjualan</h3>
-                        <div className="h-48 rounded-lg bg-zinc-100 dark:bg-zinc-800" />
-                        {/* Ganti dengan Chart.js atau Recharts */}
-                    </div>
-
                     <div className="rounded-xl border p-4 shadow-sm lg:col-span-2 dark:border-zinc-700 dark:bg-zinc-900">
                         <h3 className="mb-4 text-lg font-semibold">Transaksi Terbaru</h3>
                         <div className="overflow-x-auto">
@@ -68,30 +68,31 @@ export default function Dashboard() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {[
-                                        { tanggal: '14 Jun 2025', kasir: 'Andi', total: 'Rp 230.000', status: 'Sukses' },
-                                        { tanggal: '14 Jun 2025', kasir: 'Dina', total: 'Rp 420.000', status: 'Sukses' },
-                                        { tanggal: '13 Jun 2025', kasir: 'Rudi', total: 'Rp 180.000', status: 'Pending' },
-                                    ].map((trx, idx) => (
+                                    {new_transaction.data.map((trx, idx) => (
                                         <tr key={idx} className="border-b text-zinc-600 dark:border-zinc-700 dark:text-zinc-300">
-                                            <td className="p-2">{trx.tanggal}</td>
-                                            <td className="p-2">{trx.kasir}</td>
-                                            <td className="p-2">{trx.total}</td>
+                                            <td className="p-2">{formatSimpleDate(trx.created_at)}</td>
+                                            <td className="p-2">{trx.user.name}</td>
+                                            <td className="p-2">{formatPrice(trx.total_price)}</td>
                                             <td className="p-2">
-                                                <span
-                                                    className={`rounded-full px-3 py-1 text-xs font-medium ${
-                                                        trx.status === 'Sukses'
-                                                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
-                                                            : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300'
-                                                    }`}
-                                                >
-                                                    {trx.status}
-                                                </span>
+                                                <td className="p-2">
+                                                    {(() => {
+                                                        const { label, className } = getTransactionStatusStyle(trx.status);
+                                                        return <span className={className}>{label}</span>;
+                                                    })()}
+                                                </td>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+                        <div className="mt-4 flex items-center justify-center">
+                            <Link
+                                href="/transactions"
+                                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400"
+                            >
+                                Lihat Semua
+                            </Link>
                         </div>
                     </div>
                 </div>

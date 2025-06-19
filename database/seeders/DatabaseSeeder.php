@@ -31,14 +31,12 @@ class DatabaseSeeder extends Seeder
         $kasir_user->syncRoles($kasir);
 
         $this->call([
-            CustomerSeeder::class,
             SupplierSeeder::class,
             CategorySeeder::class,
             ProductSeeder::class,
             PurchaseSeeder::class,
             TransactionSeeder::class,
             TransactionDetailSeeder::class,
-            PaymentSeeder::class,
         ]);
     }
 }

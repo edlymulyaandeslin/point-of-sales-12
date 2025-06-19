@@ -14,9 +14,13 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("user_id")->constrained("users")->cascadeOnDelete();
-            $table->foreignId("customer_id")->constrained("customers");
+            $table->foreignId("user_id")->constrained("users");
+            $table->string("customer");
             $table->float("total_price");
+            $table->enum("payment_status", [
+                Transaction::CASH,
+                Transaction::QRIS
+            ]);
             $table->enum("status", [
                 Transaction::PENDING,
                 Transaction::COMPLETED,

@@ -79,9 +79,23 @@ export interface Product {
 export interface Transaction {
     id: number;
     user_id: number;
-    customer_id: number;
-    total_price: string;
+    customer: string;
+    total_price: number;
+    payment_status: string;
+    status: string;
+    user: User;
+    transaction_details: TransactionDetail[];
+    created_at: string;
+    updated_at: string;
+}
+
+export interface TransactionDetail {
+    transaction_id: number;
+    product_id: number;
+    product: Product;
     price: number;
+    qty: number;
+    subtotal: number;
     created_at: string;
     updated_at: string;
 }
