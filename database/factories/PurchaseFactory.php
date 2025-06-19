@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\Product;
 use App\Models\Supplier;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -20,10 +21,14 @@ class PurchaseFactory extends Factory
     {
         $length_users = User::count();
         $length_suppliers = Supplier::count();
+        $length_products = Product::count();
         return [
             "user_id" => mt_rand(1, $length_users),
             "supplier_id" => mt_rand(1, $length_suppliers),
-            "total_price" => fake()->numberBetween(100000, 500000)
+            "product_id" => mt_rand(1, $length_products),
+            'price' => fake()->numberBetween(1000, 100000),
+            'qty' => fake()->numberBetween(1, 100),
+            'subtotal' => fake()->numberBetween(50000, 200000),
         ];
     }
 }

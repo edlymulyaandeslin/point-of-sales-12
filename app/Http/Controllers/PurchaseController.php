@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
+use App\Models\Product;
 use App\Models\Purchase;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 
 class PurchaseController extends Controller
@@ -11,11 +13,19 @@ class PurchaseController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $purchases = Purchase::with(["user", "supplier"])->get();
+        $query = Purchase::with(['user', 'supplier', 'purchase_details.product']);
+
+        if ($search = $request->search) {
+            $query->where('supplier.name', 'like', "%{$search}%");
+        }
+
+        $purchases = $query->latest()->paginate(10)->withQueryString();
+
         return Inertia::render("purchases/index", [
-            "purchases" => $purchases
+            "purchases" => $purchases,
+            "search" => $request->search
         ]);
     }
 
@@ -24,7 +34,12 @@ class PurchaseController extends Controller
      */
     public function create()
     {
-        //
+        $suppliers = Supplier::latest()->get();
+        $products = Product::latest()->get();
+        return Inertia::render("purchases/create", [
+            'suppliers' => $suppliers,
+            'products' => $products,
+        ]);
     }
 
     /**
@@ -32,7 +47,16 @@ class PurchaseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data_input = $request->validate([
+            "supplier_id" => "required",
+            "name" => "required",
+            "price" => "required|numeric",
+            "stock" => "required|numeric",
+        ]);
+
+        Purchase::create($data_input);
+
+        return redirect()->route("purchases.index")->with("success", "Pembelian berhasil ditambahkan.");
     }
 
     /**
@@ -48,7 +72,11 @@ class PurchaseController extends Controller
      */
     public function edit(Purchase $purchase)
     {
-        //
+        $suppliers = Supplier::all();
+        return Inertia::render('purchases/edit', [
+            'purchase' => $purchase,
+            'suppliers' => $suppliers
+        ]);
     }
 
     /**
@@ -56,7 +84,18 @@ class PurchaseController extends Controller
      */
     public function update(Request $request, Purchase $purchase)
     {
-        //
+        $rules = [
+            "category_id" => "required",
+            "name" => "required",
+            "price" => "required|numeric",
+            "stock" => "required|numeric",
+        ];
+
+        $validate_data = $request->validate($rules);
+
+        $purchase->update($validate_data);
+
+        return redirect()->route('purchases.index')->with('success', 'Pembelian berhasil diperbarui!');
     }
 
     /**
@@ -64,6 +103,8 @@ class PurchaseController extends Controller
      */
     public function destroy(Purchase $purchase)
     {
-        //
+        $purchase->delete();
+
+        return redirect()->route('purchases.index')->with('success', 'Pembelian Berhasil Dihapus!');
     }
 }

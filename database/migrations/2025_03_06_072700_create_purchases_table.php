@@ -15,7 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId("user_id")->constrained("users")->cascadeOnDelete();
             $table->foreignId("supplier_id")->constrained("suppliers")->cascadeOnDelete();
-            $table->float("total_price");
+            $table->foreignId("product_id")->constrained("products");
+            $table->float("price");
+            $table->integer("qty");
+            $table->float("subtotal");
             $table->timestamps();
         });
     }

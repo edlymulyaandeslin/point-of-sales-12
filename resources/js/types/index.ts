@@ -94,12 +94,22 @@ export interface Supplier {
     updated_at: string;
 }
 
+interface PurchaseDetail {
+    purchase_id: number;
+    product_id: number;
+    product: Product;
+    qty: number;
+    price: number;
+    subtotal: number;
+}
+
 export interface Purchase {
     id: number;
     user_id: number;
     supplier_id: number;
     user: User;
     supplier: Supplier;
+    purchase_details: PurchaseDetail[];
     total_price: number;
     created_at: string;
     updated_at: string;
