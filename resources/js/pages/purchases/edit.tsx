@@ -1,5 +1,5 @@
 import AppLayout from '@/layouts/app-layout'; // Pastikan path ini benar
-import type { BreadcrumbItem, Category, Product } from '@/types'; // Hanya butuh BreadcrumbItem karena Role tidak lagi digunakan
+import type { BreadcrumbItem, Product, Purchase, Supplier } from '@/types'; // Hanya butuh BreadcrumbItem karena Role tidak lagi digunakan
 import { Head, useForm } from '@inertiajs/react';
 
 import { Button } from '@/components/ui/button';
@@ -8,74 +8,113 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Products', href: '/products' },
-    { title: 'Edit', href: '/products/edit' },
+    { title: 'Purchases', href: '/purchases' },
+    { title: 'Edit', href: '/purchases/edit' },
 ];
 
-export default function Edit({ product, categories }: { product: Product; categories: Category[] }) {
-    // Menggunakan hook useForm dengan state hanya untuk 'name' dan 'phone'
+export default function Edit({ purchase, suppliers, products }: { purchase: Purchase; suppliers: Supplier[]; products: Product[] }) {
+    // Menggunakan hook useForm
     const { data, setData, put, processing, errors } = useForm({
-        category_id: product.category_id || '',
-        name: product.name || '',
-        price: product.price || '',
-        stock: product.stock || '',
+        supplier_id: String(purchase.supplier_id) || '',
+        product_id: String(purchase.product_id) || '',
+        price: purchase.price || 0,
+        qty: purchase.qty || 1,
+        subtotal: purchase.subtotal || 0,
     });
 
     // Fungsi yang akan dipanggil saat form disubmit
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route('products.update', product.id));
+        put(route('purchases.update', purchase.id));
+    };
+
+    const handleChangeProduct = (productId: string) => {
+        const product = products.find((product) => product.id === parseInt(productId));
+
+        if (product) {
+            const price = product?.price;
+            setData('product_id', productId);
+            setData('price', price);
+
+            const subtotal = data.qty * price;
+            setData('subtotal', subtotal);
+        }
+    };
+
+    const handleChangeQty = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const qty = e.target.value ? parseInt(e.target.value) : 1;
+        setData('qty', qty);
+
+        const subtotal = qty * data.price;
+        setData('subtotal', subtotal);
     };
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Edit Product" />
+            <Head title="Edit Pembelian" />
 
             <section className="w-full px-6 py-10 md:px-12 lg:px-20">
                 <div className="mb-10">
-                    <h1 className="text-4xl font-bold">Edit Product</h1>
-                    <p className="text-muted-foreground mt-2 text-base">Masukkan informasi product baru pada form berikut.</p>
+                    <h1 className="text-4xl font-bold">Edit Pembelian</h1>
+                    <p className="text-muted-foreground mt-2 text-base">Masukkan informasi pembelian baru pada form berikut.</p>
                 </div>
 
-                {/* Form  */}
+                {/* Form dengan hanya input Nama dan Nomor Telepon */}
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                    {/* Input untuk Nama */}
+                    {/* Supplier */}
                     <div>
-                        <Label htmlFor="name">Nama</Label>
-                        <Input id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} placeholder="Nama produk" />
-                        {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
-                    </div>
-
-                    {/* Category */}
-                    <div>
-                        <Label htmlFor="category_id">Kategori</Label>
-                        <Select value={String(data.category_id)} onValueChange={(value) => setData('category_id', value)}>
+                        <Label htmlFor="supplier_id">Supplier</Label>
+                        <Select value={data.supplier_id} onValueChange={(value) => setData('supplier_id', value)}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Pilih Kategori" />
+                                <SelectValue placeholder="Pilih Supplier" />
                             </SelectTrigger>
-                            <SelectContent>
-                                {categories.map((category) => (
-                                    <SelectItem key={category.id} value={String(category.id)}>
-                                        {category.name}
+                            <SelectContent className="max-h-60 overflow-y-auto">
+                                {suppliers.map((supplier) => (
+                                    <SelectItem key={supplier.id} value={String(supplier.id)}>
+                                        {supplier.name}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
-                        {errors.category_id && <p className="mt-1 text-sm text-red-500">{errors.category_id}</p>}
+                        {errors.supplier_id && <p className="mt-1 text-sm text-red-500">{errors.supplier_id}</p>}
+                    </div>
+
+                    {/* Produk */}
+                    <div>
+                        <Label htmlFor="product_id">Produk</Label>
+                        <Select value={data.product_id} onValueChange={(value) => handleChangeProduct(value)}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Pilih Produk" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-60 overflow-y-auto">
+                                {products.map((product) => (
+                                    <SelectItem key={product.id} value={String(product.id)}>
+                                        {product.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        {errors.product_id && <p className="mt-1 text-sm text-red-500">{errors.product_id}</p>}
                     </div>
 
                     {/* Price */}
                     <div>
                         <Label htmlFor="price">Harga</Label>
-                        <Input id="price" value={data.price} onChange={(e) => setData('price', e.target.value)} placeholder="Harga produk" />
+                        <Input id="price" value={data.price} onChange={() => ''} placeholder="Harga produk" readOnly />
                         {errors.price && <p className="mt-1 text-sm text-red-500">{errors.price}</p>}
                     </div>
 
-                    {/* Stock */}
+                    {/* Qty */}
                     <div>
-                        <Label htmlFor="stock">Stok</Label>
-                        <Input id="stock" value={data.stock} min={1} onChange={(e) => setData('stock', e.target.value)} placeholder="Jumlah stok" />
-                        {errors.stock && <p className="mt-1 text-sm text-red-500">{errors.stock}</p>}
+                        <Label htmlFor="qty">Qty</Label>
+                        <Input id="qty" value={data.qty} type="number" min={1} onChange={handleChangeQty} placeholder="Jumlah" />
+                        {errors.qty && <p className="mt-1 text-sm text-red-500">{errors.qty}</p>}
+                    </div>
+
+                    <div>
+                        <Label htmlFor="subtotal">Subtotal</Label>
+                        <Input id="subtotal" value={data.subtotal} placeholder="Subtotal" readOnly />
+                        {errors.subtotal && <p className="mt-1 text-sm text-red-500">{errors.subtotal}</p>}
                     </div>
 
                     {/* Tombol Submit Form */}

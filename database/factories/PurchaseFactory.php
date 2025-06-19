@@ -19,11 +19,9 @@ class PurchaseFactory extends Factory
      */
     public function definition(): array
     {
-        $length_users = User::count();
         $length_suppliers = Supplier::count();
         $length_products = Product::count();
         return [
-            "user_id" => mt_rand(1, $length_users),
             "supplier_id" => mt_rand(1, $length_suppliers),
             "product_id" => mt_rand(1, $length_products),
             'price' => fake()->numberBetween(1000, 100000),

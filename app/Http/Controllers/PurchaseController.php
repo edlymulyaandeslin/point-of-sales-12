@@ -15,7 +15,7 @@ class PurchaseController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Purchase::with(['user', 'supplier', 'purchase_details.product']);
+        $query = Purchase::with(['supplier', 'product']);
 
         if ($search = $request->search) {
             $query->where('supplier.name', 'like', "%{$search}%");
@@ -49,9 +49,10 @@ class PurchaseController extends Controller
     {
         $data_input = $request->validate([
             "supplier_id" => "required",
-            "name" => "required",
+            "product_id" => "required",
             "price" => "required|numeric",
-            "stock" => "required|numeric",
+            "qty" => "required|numeric",
+            "subtotal" => "required|numeric",
         ]);
 
         Purchase::create($data_input);
@@ -72,10 +73,12 @@ class PurchaseController extends Controller
      */
     public function edit(Purchase $purchase)
     {
-        $suppliers = Supplier::all();
+        $suppliers = Supplier::latest()->get();
+        $products = Product::latest()->get();
         return Inertia::render('purchases/edit', [
             'purchase' => $purchase,
-            'suppliers' => $suppliers
+            'suppliers' => $suppliers,
+            'products' => $products
         ]);
     }
 
@@ -84,14 +87,13 @@ class PurchaseController extends Controller
      */
     public function update(Request $request, Purchase $purchase)
     {
-        $rules = [
-            "category_id" => "required",
-            "name" => "required",
+        $validate_data = $request->validate([
+            "supplier_id" => "required",
+            "product_id" => "required",
             "price" => "required|numeric",
-            "stock" => "required|numeric",
-        ];
-
-        $validate_data = $request->validate($rules);
+            "qty" => "required|numeric",
+            "subtotal" => "required|numeric",
+        ]);
 
         $purchase->update($validate_data);
 

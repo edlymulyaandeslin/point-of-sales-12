@@ -16,7 +16,6 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
     // Menggunakan hook useForm
     const { data, setData, post, processing, errors } = useForm({
         supplier_id: '',
-        total_price: 0,
         product_id: '',
         price: 0,
         qty: 1,
@@ -26,8 +25,7 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
     // Fungsi yang akan dipanggil saat form disubmit
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(data);
-        // post('/purchases');
+        post('/purchases');
     };
 
     const handleChangeProduct = (productId: string) => {
@@ -70,7 +68,7 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                             <SelectTrigger>
                                 <SelectValue placeholder="Pilih Supplier" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="max-h-60 overflow-y-auto">
                                 {suppliers.map((supplier) => (
                                     <SelectItem key={supplier.id} value={String(supplier.id)}>
                                         {supplier.name}
@@ -88,7 +86,7 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                             <SelectTrigger>
                                 <SelectValue placeholder="Pilih Produk" />
                             </SelectTrigger>
-                            <SelectContent>
+                            <SelectContent className="max-h-60 overflow-y-auto">
                                 {products.map((product) => (
                                     <SelectItem key={product.id} value={String(product.id)}>
                                         {product.name}

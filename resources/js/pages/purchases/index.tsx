@@ -83,16 +83,24 @@ export default function Index({ purchases }: { purchases: PaginatedData<Purchase
                             render: (_, index) => <span className="text-sm">{index}</span>,
                         },
                         {
-                            title: 'User',
-                            render: (purchase) => <span className="text-sm">{purchase.user.name}</span>,
-                        },
-                        {
                             title: 'Supplier',
                             render: (purchase) => <span className="text-sm font-medium">{purchase.supplier.name}</span>,
                         },
                         {
-                            title: 'Total Pembelian',
-                            render: (purchase) => <span className="text-sm font-medium">{formatPrice(purchase.total_price)}</span>,
+                            title: 'Produk',
+                            render: (purchase) => <span className="text-sm font-medium">{purchase.product.name}</span>,
+                        },
+                        {
+                            title: 'Kuantitas',
+                            render: (purchase) => <span className="text-sm font-medium">{purchase.qty}</span>,
+                        },
+                        {
+                            title: 'Harga',
+                            render: (purchase) => <span className="text-sm font-medium">{formatPrice(purchase.price)}</span>,
+                        },
+                        {
+                            title: 'Total',
+                            render: (purchase) => <span className="text-sm font-medium">{formatPrice(purchase.subtotal)}</span>,
                         },
                         {
                             title: 'Aksi',
@@ -136,10 +144,6 @@ export default function Index({ purchases }: { purchases: PaginatedData<Purchase
                     <div className="space-y-6 rounded-lg bg-white py-6 text-sm text-gray-700 dark:bg-zinc-900 dark:text-gray-200">
                         <div className="grid grid-cols-1 gap-4 border-b pb-6 md:grid-cols-2">
                             <div className="flex flex-col">
-                                <span className="text-xs text-gray-500 dark:text-gray-400">User</span>
-                                <span className="text-base font-semibold">{selectedPurchase.user.name}</span>
-                            </div>
-                            <div className="flex flex-col">
                                 <span className="text-xs text-gray-500 dark:text-gray-400">Supplier</span>
                                 <span className="text-base font-semibold">{selectedPurchase.supplier.name}</span>
                             </div>
@@ -160,32 +164,30 @@ export default function Index({ purchases }: { purchases: PaginatedData<Purchase
                         </div>
                         <h1 className="text-lg font-medium">Detail Pembelian</h1>
                         <div className="border-b pb-6">
-                            {selectedPurchase.purchase_details.map((pd, index) => (
-                                <div className="grid grid-cols-4 gap-x-2 gap-y-3" key={index}>
-                                    <div className="flex flex-col">
-                                        <span className="text-xs text-gray-500 dark:text-gray-400">Product</span>
-                                        <span className="text-base">{pd.product.name}</span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-xs text-gray-500 dark:text-gray-400">Quantity</span>
-                                        <span className="text-base">{pd.qty}</span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-xs text-gray-500 dark:text-gray-400">Price</span>
-                                        <span className="text-base">{formatPrice(pd.product.price)}</span>
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-xs text-gray-500 dark:text-gray-400">Subtotal</span>
-                                        <span className="text-base">{formatPrice(pd.subtotal)}</span>
-                                    </div>
+                            <div className="grid grid-cols-4 gap-x-2 gap-y-3">
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">Product</span>
+                                    <span className="text-base">{selectedPurchase.product.name}</span>
                                 </div>
-                            ))}
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">Quantity</span>
+                                    <span className="text-base">{selectedPurchase.qty}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">Price</span>
+                                    <span className="text-base">{formatPrice(selectedPurchase.product.price)}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">Subtotal</span>
+                                    <span className="text-base">{formatPrice(selectedPurchase.subtotal)}</span>
+                                </div>
+                            </div>
                         </div>
                         <div>
                             {/* Total */}
                             <div className="flex flex-col">
                                 <span className="text-lg font-bold">Total</span>
-                                <span className="text-lg font-semibold">{formatPrice(selectedPurchase.total_price)}</span>
+                                <span className="text-lg font-semibold">{formatPrice(selectedPurchase.subtotal)}</span>
                             </div>
                         </div>
 
