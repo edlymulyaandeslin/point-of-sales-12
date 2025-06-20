@@ -20,12 +20,15 @@ class TransactionDetailFactory extends Factory
     {
         $length_transactions = Transaction::count();
         $length_products = Product::count();
+        $price = fake()->numberBetween(5000, 50000);
+        $qty = fake()->numberBetween(1, 20);
+        $subtotal = $qty * $price;
         return [
             "transaction_id" => mt_rand(1, $length_transactions),
             "product_id" => mt_rand(1, $length_products),
-            "price" => fake()->numberBetween(5000, 50000),
-            "qty" => fake()->numberBetween(1, 20),
-            "subtotal" => fake()->numberBetween(50000, 150000)
+            "price" => $price,
+            "qty" => $qty,
+            "subtotal" => $subtotal
         ];
     }
 }

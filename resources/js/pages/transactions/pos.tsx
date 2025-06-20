@@ -3,16 +3,16 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Category, Product } from '@/types';
 import { formatPrice } from '@/utils';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { ScrollArea } from '@radix-ui/themes';
+import axios from 'axios';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { toast, Toaster } from 'sonner';
 
 type CartItem = Product & { quantity: number };
 
-const paymentMethods = ['Cash', 'QRIS'];
-
-export default function Pos({ products, categories }: { products: Product[]; categories: Category[] }) {
+export default function Pos({ products, categories, paymentMethods }: { products: Product[]; categories: Category[]; paymentMethods: string[] }) {
     const [selectedCategory, setSelectedCategory] = useState<string>('semua');
     const [cart, setCart] = useState<CartItem[]>([]);
     const [customerName, setCustomerName] = useState<string>('Umum');
@@ -44,18 +44,45 @@ export default function Pos({ products, categories }: { products: Product[]; cat
         setCart((prev) => prev.map((item) => (item.id === id ? { ...item, quantity: item.quantity - 1 } : item)).filter((item) => item.quantity > 0));
     };
 
+    const [cashGiven, setCashGiven] = useState<number | ''>('');
+    const change = typeof cashGiven === 'number' ? cashGiven - total : 0;
+
+    const handleCheckout = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const payload = {
+            customer: customerName,
+            money_given: cashGiven,
+            payment_method: paymentMethod,
+            carts: cart,
+        };
+
+        const response = await axios.post(route('transactions.checkout'), payload);
+        const is_success = await response.data.success;
+        const message = await response.data.message;
+        if (is_success) {
+            toast.success(message);
+            resetForm();
+        }
+    };
+
+    const resetForm = () => {
+        setCart([]);
+        setCashGiven('');
+    };
+
     return (
         <div className="min-h-screen bg-zinc-50 p-4 dark:bg-zinc-900">
+            <Toaster richColors />
+
             <Head title="Transaksi" />
+
             <div className="mb-4 flex items-center justify-between">
                 <h1 className="text-xl font-bold text-zinc-800 dark:text-white">Transaksi</h1>
-                <button
-                    onClick={() => window.history.back()}
-                    className="flex cursor-pointer items-center gap-2 text-sm text-zinc-600 hover:underline dark:text-zinc-300"
-                >
+                <Link href={'/dashboard'} className="flex cursor-pointer items-center gap-2 text-sm text-zinc-600 hover:underline dark:text-zinc-300">
                     <ArrowLeft size={16} />
                     Kembali ke Aplikasi
-                </button>
+                </Link>
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
@@ -112,7 +139,7 @@ export default function Pos({ products, categories }: { products: Product[]; cat
                             {filteredProducts.map((product) => (
                                 <Card
                                     key={product.id}
-                                    className="cursor-pointer p-4 text-center shadow-sm transition hover:scale-[1.02] hover:shadow-md dark:bg-zinc-800"
+                                    className="flex cursor-pointer flex-col items-center justify-between p-4 text-center shadow-sm transition hover:scale-[1.02] hover:shadow-md dark:bg-zinc-800"
                                     onClick={() => addToCart(product)}
                                 >
                                     <div className="text-sm font-semibold text-zinc-800 dark:text-white">{product.name}</div>
@@ -193,11 +220,38 @@ export default function Pos({ products, categories }: { products: Product[]; cat
                                         key={method}
                                         variant={paymentMethod === method ? 'default' : 'outline'}
                                         onClick={() => setPaymentMethod(method)}
-                                        className="flex-1"
+                                        className="flex-1 uppercase"
                                     >
                                         {method}
                                     </Button>
                                 ))}
+                            </div>
+
+                            <div>
+                                <label htmlFor="cash" className="mb-1 block">
+                                    Uang Diberikan
+                                </label>
+                                <Input
+                                    id="cash"
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="0"
+                                    className="border-gray-600"
+                                    value={
+                                        typeof cashGiven === 'number'
+                                            ? cashGiven.toLocaleString('en-US') // gunakan en-US agar separator pakai koma
+                                            : ''
+                                    }
+                                    onChange={(e) => {
+                                        const raw = e.target.value.replace(/[^\d]/g, ''); // hapus semua karakter kecuali angka
+                                        const parsed = parseInt(raw);
+                                        if (isNaN(parsed)) {
+                                            setCashGiven('');
+                                        } else {
+                                            setCashGiven(parsed);
+                                        }
+                                    }}
+                                />
                             </div>
 
                             <div className="flex justify-between font-semibold text-zinc-700 dark:text-white">
@@ -205,7 +259,18 @@ export default function Pos({ products, categories }: { products: Product[]; cat
                                 <span>{formatPrice(total)}</span>
                             </div>
 
-                            <Button disabled={cart.length === 0 || customerName === ''} className="mt-2 w-full bg-green-600 hover:bg-green-700">
+                            <div className="flex justify-between font-semibold text-zinc-700 dark:text-white">
+                                <span>Kembalian:</span>
+                                <span className={change < 0 ? 'text-red-500' : ''}>
+                                    {change < 0 ? `Kurang ${formatPrice(Math.abs(change))}` : formatPrice(change)}
+                                </span>
+                            </div>
+
+                            <Button
+                                onClick={handleCheckout}
+                                disabled={cart.length === 0 || customerName === '' || typeof cashGiven !== 'number' || cashGiven < total}
+                                className="mt-2 w-full bg-green-600 hover:bg-green-700"
+                            >
                                 Bayar Sekarang
                             </Button>
                         </div>

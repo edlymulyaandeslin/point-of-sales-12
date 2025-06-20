@@ -19,6 +19,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', [DashboardController::class, "index"])->name('dashboard');
 
     Route::get('transactions/point-of-sales', [TransactionController::class, "pos"])->name('transactions.pos');
+    Route::post('/api/transaction/checkout', [TransactionController::class, "checkout"])->name('transactions.checkout');
 
     Route::resource("users", UserController::class);
     Route::resource("categories", CategoryController::class);

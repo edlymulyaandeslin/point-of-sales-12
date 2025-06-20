@@ -16,8 +16,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId("user_id")->constrained("users");
             $table->string("customer");
+            $table->float("money_given");
             $table->float("total_price");
-            $table->enum("payment_status", [
+            $table->enum("payment_method", [
                 Transaction::CASH,
                 Transaction::QRIS
             ]);

@@ -19,12 +19,13 @@ class TransactionFactory extends Factory
     public function definition(): array
     {
         $length_users = User::count();
-
+        $money = fake()->numberBetween(30000, 100000);
         return [
             "user_id" => mt_rand(1, $length_users),
             "customer" => fake()->firstName() . ' ' . fake()->lastName(),
-            "total_price" => fake()->numberBetween(30000, 100000),
-            "payment_status" => fake()->randomElement([Transaction::CASH, Transaction::QRIS]),
+            "money_given" => $money,
+            "total_price" => $money,
+            "payment_method" => fake()->randomElement([Transaction::CASH, Transaction::QRIS]),
             "status" => fake()->randomElement([Transaction::PENDING, Transaction::COMPLETED, Transaction::CANCELLED]),
         ];
     }

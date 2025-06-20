@@ -81,7 +81,7 @@ export interface Transaction {
     user_id: number;
     customer: string;
     total_price: number;
-    payment_status: string;
+    payment_method: string;
     status: string;
     user: User;
     transaction_details: TransactionDetail[];

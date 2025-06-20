@@ -6,7 +6,10 @@ use Inertia\Inertia;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Transaction;
+use App\Models\TransactionDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionController extends Controller
 {
@@ -54,7 +57,7 @@ class TransactionController extends Controller
 
         Transaction::create($data_input);
 
-        return redirect()->route("transactions.index")->with("success", "Pembelian berhasil ditambahkan.");
+        return redirect()->route("transactions.index")->with("success", "Transaksi berhasil ditambahkan.");
     }
 
     /**
@@ -91,7 +94,7 @@ class TransactionController extends Controller
 
         $transaction->update($validate_data);
 
-        return redirect()->route('transactions.index')->with('success', 'Pembelian berhasil diperbarui!');
+        return redirect()->route('transactions.index')->with('success', 'Transaksi berhasil diperbarui!');
     }
 
     /**
@@ -101,17 +104,70 @@ class TransactionController extends Controller
     {
         $transaction->delete();
 
-        return redirect()->route('transactions.index')->with('success', 'Pembelian Berhasil Dihapus!');
+        return redirect()->route('transactions.index')->with('success', 'Transaksi Berhasil Dihapus!');
     }
 
     public function pos()
     {
         $products = Product::with('category')->latest()->get();
         $categories = Category::latest()->get();
+        $paymentMethods = [Transaction::CASH, Transaction::QRIS];
 
         return Inertia::render('transactions/pos', [
             'products' => $products,
             'categories' => $categories,
+            'paymentMethods' => $paymentMethods,
         ]);
+    }
+
+    public function checkout(Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $customer = $request->customer;
+            $money_given = $request->money_given;
+            $payment_method = $request->payment_method;
+            $carts = $request->carts;
+            $total_price = 0;
+
+            $transaction = Transaction::create([
+                'user_id' => Auth::user()->id,
+                'customer' => $customer,
+                'money_given' => $money_given,
+                'total_price' => $total_price,
+                'payment_method' => $payment_method,
+                'status' => Transaction::COMPLETED
+            ]);
+
+            foreach ($carts as $cart) {
+                $price = $cart['price'];
+                $quantity = $cart['quantity'];
+                $subtotal = $price * $quantity;
+
+                $transaction->transaction_details()->create([
+                    'product_id' => $cart['id'],
+                    'price' => $price,
+                    'qty' => $quantity,
+                    'subtotal' => $subtotal
+                ]);
+
+                $total_price += $subtotal;
+            }
+
+            $transaction->total_price = $total_price;
+            $transaction->save();
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaksi berhasil!',
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }

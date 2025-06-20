@@ -74,12 +74,10 @@ export default function Dashboard({
                                             <td className="p-2">{trx.user.name}</td>
                                             <td className="p-2">{formatPrice(trx.total_price)}</td>
                                             <td className="p-2">
-                                                <td className="p-2">
-                                                    {(() => {
-                                                        const { label, className } = getTransactionStatusStyle(trx.status);
-                                                        return <span className={className}>{label}</span>;
-                                                    })()}
-                                                </td>
+                                                {(() => {
+                                                    const { label, className } = getTransactionStatusStyle(trx.status);
+                                                    return <span className={className}>{label}</span>;
+                                                })()}
                                             </td>
                                         </tr>
                                     ))}

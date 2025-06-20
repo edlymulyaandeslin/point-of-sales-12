@@ -17,7 +17,7 @@ class DashboardController extends Controller
 
         $total_penjualan = $transaction->where('status', 'completed')->sum('total_price');
 
-        $jumlah_transaksi_today = $transaction->where('status', 'completed')->whereDate('created_at', today())->count();
+        $jumlah_transaksi_today = $transaction->whereDate('created_at', today())->count();
 
         $jumlah_barang_terjual = TransactionDetail::whereHas('transaction', function ($query) {
             $query->where('status', 'completed');

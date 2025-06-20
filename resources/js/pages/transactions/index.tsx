@@ -87,8 +87,7 @@ export default function Index({ transactions }: { transactions: PaginatedData<Tr
                         {
                             title: 'Metode Pembayaran',
                             render: (transaction) => {
-                                const { label, className } = getPaymentMethodStyle(transaction.payment_status);
-
+                                const { label, className } = getPaymentMethodStyle(transaction.payment_method);
                                 return <span className={className}>{label}</span>;
                             },
                         },
@@ -145,7 +144,7 @@ export default function Index({ transactions }: { transactions: PaginatedData<Tr
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-xs text-gray-500 dark:text-gray-400">Metode Pembayaran</span>
-                                <span className="text-base">{selectedTransaction.payment_status}</span>
+                                <span className="text-base">{selectedTransaction.payment_method}</span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-xs text-gray-500 dark:text-gray-400">Dibuat Pada</span>
@@ -176,7 +175,7 @@ export default function Index({ transactions }: { transactions: PaginatedData<Tr
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-xs text-gray-500 dark:text-gray-400">Price</span>
-                                        <span className="text-sm">{formatPrice(td.product.price)}</span>
+                                        <span className="text-sm">{formatPrice(td.price)}</span>
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-xs text-gray-500 dark:text-gray-400">Subtotal</span>
