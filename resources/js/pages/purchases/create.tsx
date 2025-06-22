@@ -28,21 +28,8 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
         post('/purchases');
     };
 
-    const handleChangeProduct = (productId: string) => {
-        const product = products.find((product) => product.id === parseInt(productId));
-
-        if (product) {
-            const price = product?.price;
-            setData('product_id', productId);
-            setData('price', price);
-
-            const subtotal = data.qty * price;
-            setData('subtotal', subtotal);
-        }
-    };
-
     const handleChangeQty = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const qty = e.target.value ? parseInt(e.target.value) : 1;
+        const qty = e.target.value ? parseInt(e.target.value) : 0;
         setData('qty', qty);
 
         const subtotal = qty * data.price;
@@ -82,7 +69,7 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                     {/* Produk */}
                     <div>
                         <Label htmlFor="product_id">Produk</Label>
-                        <Select value={data.product_id} onValueChange={(value) => handleChangeProduct(value)}>
+                        <Select value={data.product_id} onValueChange={(value) => setData('product_id', value)}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Pilih Produk" />
                             </SelectTrigger>
@@ -100,14 +87,19 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                     {/* Price */}
                     <div>
                         <Label htmlFor="price">Harga</Label>
-                        <Input id="price" value={data.price} onChange={() => ''} placeholder="Harga produk" readOnly />
+                        <Input
+                            id="price"
+                            value={data.price}
+                            placeholder="Harga produk"
+                            onChange={(e) => setData('price', e.target.value ? parseInt(e.target.value) : 0)}
+                        />
                         {errors.price && <p className="mt-1 text-sm text-red-500">{errors.price}</p>}
                     </div>
 
                     {/* Qty */}
                     <div>
                         <Label htmlFor="qty">Qty</Label>
-                        <Input id="qty" value={data.qty} type="number" min={1} onChange={handleChangeQty} placeholder="Jumlah" />
+                        <Input id="qty" value={data.qty} onChange={handleChangeQty} placeholder="Jumlah" />
                         {errors.qty && <p className="mt-1 text-sm text-red-500">{errors.qty}</p>}
                     </div>
 

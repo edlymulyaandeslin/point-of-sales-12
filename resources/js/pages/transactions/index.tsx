@@ -5,6 +5,7 @@ import AppLayout from '@/layouts/app-layout';
 import { PaginatedData, type BreadcrumbItem, type Transaction } from '@/types';
 import { formatPrice, getPaymentMethodStyle, getTransactionStatusStyle } from '@/utils';
 import { Head, router, usePage } from '@inertiajs/react';
+import { HandCoins } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -55,6 +56,10 @@ export default function Index({ transactions }: { transactions: PaginatedData<Tr
             <div className="flex flex-col gap-6 p-4">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <h2 className="text-2xl font-bold tracking-tight">Data Transaksi</h2>
+                    <Button variant={'outline'} className="cursor-pointer" onClick={() => router.get(route('transactions.pos'))}>
+                        <HandCoins />
+                        Go to Kasir
+                    </Button>
                 </div>
 
                 <input

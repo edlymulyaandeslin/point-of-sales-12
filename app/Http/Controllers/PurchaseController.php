@@ -58,7 +58,12 @@ class PurchaseController extends Controller
             "subtotal" => "required|numeric",
         ]);
 
-        Purchase::create($data_input);
+        $purchase = Purchase::create($data_input);
+
+        $product = Product::find($purchase->product_id);
+        $product->stock += $purchase->qty;
+        $product->save();
+
 
         return redirect()->route("purchases.index")->with("success", "Pembelian berhasil ditambahkan.");
     }
@@ -90,17 +95,17 @@ class PurchaseController extends Controller
      */
     public function update(Request $request, Purchase $purchase)
     {
-        $validate_data = $request->validate([
-            "supplier_id" => "required",
-            "product_id" => "required",
-            "price" => "required|numeric",
-            "qty" => "required|numeric",
-            "subtotal" => "required|numeric",
-        ]);
+        // $validate_data = $request->validate([
+        //     "supplier_id" => "required",
+        //     "product_id" => "required",
+        //     "price" => "required|numeric",
+        //     "qty" => "required|numeric",
+        //     "subtotal" => "required|numeric",
+        // ]);
 
-        $purchase->update($validate_data);
+        // $purchase->update($validate_data);
 
-        return redirect()->route('purchases.index')->with('success', 'Pembelian berhasil diperbarui!');
+        // return redirect()->route('purchases.index')->with('success', 'Pembelian berhasil diperbarui!');
     }
 
     /**
@@ -108,6 +113,11 @@ class PurchaseController extends Controller
      */
     public function destroy(Purchase $purchase)
     {
+
+        $product = Product::find($purchase->product_id);
+        $product->stock -= $purchase->qty;
+        $product->save();
+
         $purchase->delete();
 
         return redirect()->route('purchases.index')->with('success', 'Pembelian Berhasil Dihapus!');

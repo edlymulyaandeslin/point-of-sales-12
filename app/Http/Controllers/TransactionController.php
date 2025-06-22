@@ -6,7 +6,7 @@ use Inertia\Inertia;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Transaction;
-use App\Models\TransactionDetail;
+use Error;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -102,9 +102,17 @@ class TransactionController extends Controller
      */
     public function destroy(Transaction $transaction)
     {
+        $transaction->load('transaction_details');
+
+        foreach ($transaction->transaction_details as $td) {
+            $product = Product::find($td->product_id);
+            $product->stock += $td->qty;
+            $product->save();
+        }
+
         $transaction->delete();
 
-        return redirect()->route('transactions.index')->with('success', 'Transaksi Berhasil Dihapus!');
+        return back()->with('success', 'Transaksi Berhasil Dihapus!');
     }
 
     public function pos()
@@ -140,16 +148,26 @@ class TransactionController extends Controller
             ]);
 
             foreach ($carts as $cart) {
+                $productId = $cart['id'];
                 $price = $cart['price'];
                 $quantity = $cart['quantity'];
                 $subtotal = $price * $quantity;
 
                 $transaction->transaction_details()->create([
-                    'product_id' => $cart['id'],
+                    'product_id' => $productId,
                     'price' => $price,
                     'qty' => $quantity,
                     'subtotal' => $subtotal
                 ]);
+
+                $product = Product::find($productId);
+
+                if ($product->stock < $quantity) {
+                    throw new \Exception("Stok produk {$product->name} tidak mencukupi. {$product->stock} tersisa");
+                }
+
+                $product->stock -= $quantity;
+                $product->save();
 
                 $total_price += $subtotal;
             }

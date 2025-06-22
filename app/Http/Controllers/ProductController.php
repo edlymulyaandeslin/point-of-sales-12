@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -33,7 +35,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::latest()->get();
         return Inertia::render("products/create", [
             'categories' => $categories
         ]);
@@ -49,7 +51,21 @@ class ProductController extends Controller
             "name" => "required",
             "price" => "required|numeric",
             "stock" => "required|numeric",
+            'image' => 'nullable|image|max:2048'
         ]);
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+
+            // Buat nama file unik: uuid + ekstensi asli
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+
+            // Simpan file ke storage/app/public/products/
+            $file->storeAs('products', $filename, 'public');
+
+            // Tambahkan ke data yang akan disimpan ke DB
+            $data_input['image'] = 'products/' . $filename;
+        }
 
         Product::create($data_input);
 
@@ -69,7 +85,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $categories = Category::all();
+        $categories = Category::latest()->get();
         return Inertia::render('products/edit', [
             'product' => $product,
             'categories' => $categories
@@ -81,14 +97,32 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $rules = [
+        $validate_data = $request->validate([
             "category_id" => "required",
             "name" => "required",
             "price" => "required|numeric",
             "stock" => "required|numeric",
-        ];
+            'image' => 'nullable|image|max:2048'
+        ]);
 
-        $validate_data = $request->validate($rules);
+        if ($request->hasFile('image')) {
+            if ($product->image && Storage::exists($product->image)) {
+                Storage::delete($product->image);
+            }
+
+            $file = $request->file('image');
+
+            // Buat nama file unik: uuid + ekstensi asli
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+
+            // Simpan file ke storage/app/public/products/
+            $file->storeAs('products', $filename, 'public');
+
+            // Tambahkan ke data yang akan disimpan ke DB
+            $validate_data['image'] = 'products/' . $filename;
+        } else {
+            $validate_data['image'] = $product->image;
+        }
 
         $product->update($validate_data);
 
@@ -100,8 +134,14 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        // Hapus file gambar jika ada
+        if ($product->image && Storage::exists($product->image)) {
+            Storage::delete($product->image);
+        }
+
+        // Hapus data produk dari database
         $product->delete();
 
-        return redirect()->route('products.index')->with('success', 'Product Berhasil Dihapus!');
+        return redirect()->route('products.index')->with('success', 'Product berhasil dihapus!');
     }
 }

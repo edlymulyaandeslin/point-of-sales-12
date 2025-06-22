@@ -116,12 +116,12 @@ export default function Index({ purchases }: { purchases: PaginatedData<Purchase
                                     >
                                         Lihat
                                     </button>
-                                    <Link
+                                    {/* <Link
                                         href={`/purchases/${purchase.id}/edit`}
                                         className="inline-flex items-center rounded-md bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-700 hover:bg-yellow-200 dark:bg-yellow-900 dark:text-yellow-300 dark:hover:bg-yellow-800"
                                     >
                                         Edit
-                                    </Link>
+                                    </Link> */}
                                     <button
                                         onClick={() => {
                                             setSelectedPurchase(purchase);

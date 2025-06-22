@@ -3,11 +3,11 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Category, Product } from '@/types';
 import { formatPrice } from '@/utils';
-import { Head, Link } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { ScrollArea } from '@radix-ui/themes';
 import axios from 'axios';
 import { ArrowLeft, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast, Toaster } from 'sonner';
 
 type CartItem = Product & { quantity: number };
@@ -50,27 +50,34 @@ export default function Pos({ products, categories, paymentMethods }: { products
     const handleCheckout = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const payload = {
+        const response = await axios.post(route('transactions.checkout'), {
             customer: customerName,
             money_given: cashGiven,
             payment_method: paymentMethod,
             carts: cart,
-        };
+        });
 
-        const response = await axios.post(route('transactions.checkout'), payload);
         const is_success = await response.data.success;
         const message = await response.data.message;
         if (is_success) {
             toast.success(message);
             resetForm();
+        } else {
+            toast.error(message);
         }
     };
 
     const resetForm = () => {
         setCart([]);
+        setPaymentMethod(paymentMethods[0]);
         setCashGiven('');
     };
 
+    useEffect(() => {
+        if (paymentMethod == 'qris') {
+            setCashGiven(total);
+        }
+    }, [paymentMethod, total]);
     return (
         <div className="min-h-screen bg-zinc-50 p-4 dark:bg-zinc-900">
             <Toaster richColors />
@@ -79,10 +86,13 @@ export default function Pos({ products, categories, paymentMethods }: { products
 
             <div className="mb-4 flex items-center justify-between">
                 <h1 className="text-xl font-bold text-zinc-800 dark:text-white">Transaksi</h1>
-                <Link href={'/dashboard'} className="flex cursor-pointer items-center gap-2 text-sm text-zinc-600 hover:underline dark:text-zinc-300">
+                <button
+                    onClick={() => router.visit('/dashboard')}
+                    className="flex cursor-pointer items-center gap-2 text-sm text-zinc-600 hover:underline dark:text-zinc-300"
+                >
                     <ArrowLeft size={16} />
                     Kembali ke Aplikasi
-                </Link>
+                </button>
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
@@ -251,6 +261,7 @@ export default function Pos({ products, categories, paymentMethods }: { products
                                             setCashGiven(parsed);
                                         }
                                     }}
+                                    readOnly={paymentMethod == 'qris'}
                                 />
                             </div>
 

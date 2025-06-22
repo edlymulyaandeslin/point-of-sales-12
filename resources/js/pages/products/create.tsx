@@ -1,6 +1,7 @@
-import AppLayout from '@/layouts/app-layout'; // Pastikan path ini benar
-import type { BreadcrumbItem, Category } from '@/types'; // Hanya butuh BreadcrumbItem karena Role tidak lagi digunakan
+import AppLayout from '@/layouts/app-layout';
+import type { BreadcrumbItem, Category } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
+import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,19 +14,34 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Create({ categories }: { categories: Category[] }) {
-    // Menggunakan hook useForm dengan state hanya untuk 'name' dan 'phone'
     const { data, setData, post, processing, errors } = useForm({
         category_id: '',
         name: '',
         price: '',
-        stock: '',
+        stock: 0,
+        image: null as File | null,
     });
 
-    // Fungsi yang akan dipanggil saat form disubmit
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null;
+        setData('image', file);
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setPreviewUrl(null);
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
-        post('/products');
+        post('/products', { forceFormData: true });
     };
 
     return (
@@ -38,16 +54,15 @@ export default function Create({ categories }: { categories: Category[] }) {
                     <p className="text-muted-foreground mt-2 text-base">Masukkan informasi product baru pada form berikut.</p>
                 </div>
 
-                {/* Form dengan hanya input Nama dan Nomor Telepon */}
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                    {/* Input untuk Nama */}
+                    {/* Nama Produk */}
                     <div>
                         <Label htmlFor="name">Nama</Label>
                         <Input id="name" value={data.name} onChange={(e) => setData('name', e.target.value)} placeholder="Nama produk" />
                         {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
                     </div>
 
-                    {/* Category */}
+                    {/* Kategori */}
                     <div>
                         <Label htmlFor="category_id">Kategori</Label>
                         <Select value={data.category_id} onValueChange={(value) => setData('category_id', value)}>
@@ -65,21 +80,40 @@ export default function Create({ categories }: { categories: Category[] }) {
                         {errors.category_id && <p className="mt-1 text-sm text-red-500">{errors.category_id}</p>}
                     </div>
 
-                    {/* Price */}
+                    {/* Harga */}
                     <div>
                         <Label htmlFor="price">Harga</Label>
-                        <Input id="price" value={data.price} onChange={(e) => setData('price', e.target.value)} placeholder="Harga produk" />
+                        <Input id="price" type="number" value={data.price} onChange={(e) => setData('price', e.target.value)} placeholder="0" />
                         {errors.price && <p className="mt-1 text-sm text-red-500">{errors.price}</p>}
                     </div>
 
-                    {/* Stock */}
+                    {/* Stok */}
                     <div>
                         <Label htmlFor="stock">Stok</Label>
-                        <Input id="stock" value={data.stock} min={1} onChange={(e) => setData('stock', e.target.value)} placeholder="Jumlah stok" />
+                        <Input id="stock" value={data.stock} placeholder="Jumlah stok" readOnly />
+                        <span className="text-xs font-medium text-gray-300">Stok hanya dapat ditambahkan pada menu purchases.</span>
                         {errors.stock && <p className="mt-1 text-sm text-red-500">{errors.stock}</p>}
                     </div>
 
-                    {/* Tombol Submit Form */}
+                    {/* Upload Gambar dengan Preview */}
+                    <div className="md:col-span-2">
+                        <Label htmlFor="image">Gambar Produk</Label>
+                        <Input id="image" type="file" accept="image/*" onChange={handleImageChange} />
+                        {errors.image && <p className="mt-1 text-sm text-red-500">{errors.image}</p>}
+
+                        {previewUrl && (
+                            <div className="mt-4">
+                                <p className="text-muted-foreground mb-1 text-sm">Preview:</p>
+                                <img
+                                    src={previewUrl}
+                                    alt="Preview Produk"
+                                    className="h-48 w-auto rounded-lg border border-gray-300 object-contain dark:border-gray-700"
+                                />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Tombol Submit */}
                     <div className="mt-4 flex justify-end md:col-span-2">
                         <Button type="submit" disabled={processing}>
                             {processing ? 'Menyimpan...' : 'Simpan'}

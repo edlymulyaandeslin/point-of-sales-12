@@ -99,6 +99,20 @@ export default function Index({ products }: { products: PaginatedData<Product> }
                             render: (product) => <span className="text-sm font-medium">{product.stock}</span>,
                         },
                         {
+                            title: 'Gambar',
+                            render: (product) => (
+                                <img
+                                    src={
+                                        product.image
+                                            ? `/storage/${product.image}`
+                                            : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6xKMudVFtik4Lw_hXqz_VD2tZtPlBDezD0w&s'
+                                    }
+                                    alt="image product"
+                                    className="h-14 w-20 rounded object-cover"
+                                />
+                            ),
+                        },
+                        {
                             title: 'Aksi',
                             className: 'text-right',
                             render: (product) => (
@@ -182,6 +196,18 @@ export default function Index({ products }: { products: PaginatedData<Product> }
                                           })
                                         : 'N/A'}
                                 </span>
+                            </div>
+                            <div className="flex flex-col">
+                                <p className="text-muted-foreground mb-1 text-sm">Preview:</p>
+                                <img
+                                    src={
+                                        selectedProduct.image
+                                            ? `/storage/${selectedProduct.image}`
+                                            : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6xKMudVFtik4Lw_hXqz_VD2tZtPlBDezD0w&s'
+                                    }
+                                    alt="Preview Produk"
+                                    className="h-40 w-auto max-w-[300px] rounded-lg border border-gray-300 object-cover dark:border-gray-700"
+                                />
                             </div>
                         </div>
 
