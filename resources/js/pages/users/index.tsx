@@ -79,7 +79,7 @@ export default function Index({ users }: { users: PaginatedData<User> }) {
                             title: 'Role',
                             render: (user) => (
                                 <span
-                                    className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                                    className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold capitalize ${
                                         user.roles[0].name === 'admin'
                                             ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
                                             : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'
@@ -123,7 +123,7 @@ export default function Index({ users }: { users: PaginatedData<User> }) {
                         },
                     ]}
                 />
-            </div> 
+            </div>
 
             {/* modal show */}
             <Modal isOpen={open} onClose={() => setOpen(false)} title="Detail Pengguna" size="lg">
@@ -183,8 +183,8 @@ export default function Index({ users }: { users: PaginatedData<User> }) {
                     </div>
                 }
             >
-                 Apakah Anda yakin ingin menghapus user <strong className="text-red-600 dark:text-red-400">{selectedUser?.name}</strong>?
-                Tindakan ini tidak dapat dibatalkan.
+                Apakah Anda yakin ingin menghapus user <strong className="text-red-600 dark:text-red-400">{selectedUser?.name}</strong>? Tindakan ini
+                tidak dapat dibatalkan.
             </Modal>
         </AppLayout>
     );

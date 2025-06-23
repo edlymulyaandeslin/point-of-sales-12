@@ -145,15 +145,32 @@ export default function Pos({ products, categories, paymentMethods }: { products
                 <div className="md:col-span-6">
                     <h2 className="mb-2 text-sm font-semibold text-zinc-600 dark:text-zinc-200">Produk</h2>
                     <ScrollArea className="h-[70vh] pr-2">
-                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                             {filteredProducts.map((product) => (
                                 <Card
                                     key={product.id}
-                                    className="flex cursor-pointer flex-col items-center justify-between p-4 text-center shadow-sm transition hover:scale-[1.02] hover:shadow-md dark:bg-zinc-800"
+                                    className="group flex cursor-pointer flex-col rounded-xl border bg-white p-3 shadow transition duration-300 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-800"
                                     onClick={() => addToCart(product)}
                                 >
-                                    <div className="text-sm font-semibold text-zinc-800 dark:text-white">{product.name}</div>
-                                    <div className="text-sm text-zinc-500 dark:text-zinc-400">{formatPrice(product.price)}</div>
+                                    <div className="relative mb-1 w-full overflow-hidden rounded-lg">
+                                        <img
+                                            src={
+                                                product.image
+                                                    ? `/storage/${product.image}`
+                                                    : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6xKMudVFtik4Lw_hXqz_VD2tZtPlBDezD0w&s'
+                                            }
+                                            alt={product.name}
+                                            className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-105"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col justify-between gap-1 px-1 text-left">
+                                        <span className="line-clamp-2 text-sm font-medium text-zinc-800 capitalize dark:text-white">
+                                            {product.name}
+                                        </span>
+                                        <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                                            {formatPrice(product.price)}
+                                        </span>
+                                    </div>
                                 </Card>
                             ))}
                         </div>

@@ -84,11 +84,11 @@ export default function Index({ products }: { products: PaginatedData<Product> }
                         },
                         {
                             title: 'Kategori',
-                            render: (product) => <span className="text-sm">{product.category.name}</span>,
+                            render: (product) => <span className="text-sm font-medium capitalize">{product.category.name}</span>,
                         },
                         {
                             title: 'Nama',
-                            render: (product) => <span className="text-sm font-medium">{product.name}</span>,
+                            render: (product) => <span className="text-sm font-medium capitalize">{product.name}</span>,
                         },
                         {
                             title: 'Harga',

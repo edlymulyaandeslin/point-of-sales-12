@@ -1,11 +1,12 @@
 import DataTable from '@/components/data-table';
 import Modal from '@/components/modal';
+import PrintReceipt from '@/components/print-receipt';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { PaginatedData, type BreadcrumbItem, type Transaction } from '@/types';
 import { formatPrice, getPaymentMethodStyle, getTransactionStatusStyle } from '@/utils';
 import { Head, router, usePage } from '@inertiajs/react';
-import { HandCoins } from 'lucide-react';
+import { HandCoins, Printer } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -47,6 +48,47 @@ export default function Index({ transactions }: { transactions: PaginatedData<Tr
                 alert('Gagal menghapus transaksi. Coba lagi.');
             },
         });
+    };
+
+    const handlePrint = (transaction: Transaction) => {
+        setSelectedTransaction(transaction);
+
+        // Tunggu render PrintReceipt selesai sebelum print
+        setTimeout(() => {
+            const printContent = document.getElementById('print-section');
+            if (!printContent) return;
+
+            const WinPrint = window.open('', '', 'width=720,height=1080');
+            if (!WinPrint) return;
+
+            WinPrint.document.write(`
+            <html>
+                <head>
+                    <title>Struk Transaksi</title>
+                    <style>
+                        body {
+                            font-family: monospace;
+                            padding: 20px;
+                            font-size: 12px;
+                        }
+                        .text-center { text-align: center; }
+                        .font-bold { font-weight: bold; }
+                        .divider { margin: 10px 0; border-top: 1px dashed #000; }
+                        .flex { display: flex; justify-content: space-between; }
+                        .mt-4 { margin-top: 1rem; }
+                    </style>
+                </head>
+                <body>
+                    ${printContent.innerHTML}
+                </body>
+            </html>
+        `);
+
+            WinPrint.document.close();
+            WinPrint.focus();
+            WinPrint.print();
+            WinPrint.close();
+        }, 100); // Tunggu sejenak untuk render selesai
     };
 
     return (
@@ -109,6 +151,9 @@ export default function Index({ transactions }: { transactions: PaginatedData<Tr
                             className: 'text-right',
                             render: (transaction) => (
                                 <div className="flex justify-end gap-2">
+                                    <button type="button" className="cursor-pointer" onClick={() => handlePrint(transaction)}>
+                                        <Printer size={20} className="transition-all hover:text-blue-400" />
+                                    </button>
                                     <button
                                         onClick={() => {
                                             setSelectedTransaction(transaction);
@@ -226,6 +271,8 @@ export default function Index({ transactions }: { transactions: PaginatedData<Tr
                 Apakah Anda yakin ingin menghapus transaksi dari customer{' '}
                 <strong className="text-red-600 dark:text-red-400">{selectedTransaction?.customer}</strong>? Tindakan ini tidak dapat dibatalkan.
             </Modal>
+
+            {selectedTransaction && <PrintReceipt transaction={selectedTransaction} />}
         </AppLayout>
     );
 }

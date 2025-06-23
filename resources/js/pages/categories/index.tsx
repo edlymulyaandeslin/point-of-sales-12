@@ -83,7 +83,7 @@ export default function Index({ categories }: { categories: PaginatedData<Catego
                         },
                         {
                             title: 'Nama',
-                            render: (category) => <span className="text-sm font-medium">{category.name}</span>,
+                            render: (category) => <span className="text-sm font-medium capitalize">{category.name}</span>,
                         },
                         {
                             title: 'Aksi',
