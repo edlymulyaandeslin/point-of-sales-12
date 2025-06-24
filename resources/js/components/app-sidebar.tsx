@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BaggageClaim, HandCoins, LayoutDashboard, LayoutGrid, ShoppingBasket, ShoppingCart, UserPlus, Users } from 'lucide-react';
+import { BaggageClaim, ChartPie, HandCoins, LayoutDashboard, LayoutGrid, ShoppingBasket, ShoppingCart, UserPlus, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: { label: string; items: NavItem[] }[] = [
@@ -55,6 +55,16 @@ const mainNavItems: { label: string; items: NavItem[] }[] = [
                 title: 'Transactions',
                 url: '/transactions',
                 icon: ShoppingCart,
+            },
+        ],
+    },
+    {
+        label: 'Keuangan',
+        items: [
+            {
+                title: 'Laporan Keuangan',
+                url: '/laporan-keuangan',
+                icon: ChartPie,
             },
         ],
     },

@@ -28,6 +28,14 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
         post('/purchases');
     };
 
+    const handleChangePrice = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const price = e.target.value ? parseInt(e.target.value) : 0;
+        setData('price', price);
+
+        const subtotal = price * data.qty;
+        setData('subtotal', subtotal);
+    };
+
     const handleChangeQty = (e: React.ChangeEvent<HTMLInputElement>) => {
         const qty = e.target.value ? parseInt(e.target.value) : 0;
         setData('qty', qty);
@@ -87,12 +95,7 @@ export default function Create({ suppliers, products }: { suppliers: Supplier[];
                     {/* Price */}
                     <div>
                         <Label htmlFor="price">Harga</Label>
-                        <Input
-                            id="price"
-                            value={data.price}
-                            placeholder="Harga produk"
-                            onChange={(e) => setData('price', e.target.value ? parseInt(e.target.value) : 0)}
-                        />
+                        <Input id="price" value={data.price} placeholder="Harga produk" onChange={handleChangePrice} />
                         {errors.price && <p className="mt-1 text-sm text-red-500">{errors.price}</p>}
                     </div>
 

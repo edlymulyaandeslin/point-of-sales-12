@@ -128,6 +128,10 @@ export default function Index({ transactions }: { transactions: PaginatedData<Tr
                             render: (transaction) => <span className="text-sm font-medium">{transaction.customer}</span>,
                         },
                         {
+                            title: 'Kode Transaksi',
+                            render: (transaction) => <span className="text-sm font-medium">{transaction.kode_transaksi}</span>,
+                        },
+                        {
                             title: 'Total',
                             render: (transaction) => <span className="text-sm font-medium">{formatPrice(transaction.total_price)}</span>,
                         },
@@ -185,7 +189,7 @@ export default function Index({ transactions }: { transactions: PaginatedData<Tr
                     <div className="space-y-6 rounded-lg bg-white py-6 text-sm text-gray-700 dark:bg-zinc-900 dark:text-gray-200">
                         <div className="grid grid-cols-1 gap-4 border-b pb-6 md:grid-cols-2">
                             <div className="flex flex-col">
-                                <span className="text-xs text-gray-500 dark:text-gray-400">Customer</span>
+                                <span className="text-xs text-gray-500 dark:text-gray-400">Kode Transaksi</span>
                                 <span className="text-base font-semibold">{selectedTransaction.customer}</span>
                             </div>
                             <div className="flex flex-col">

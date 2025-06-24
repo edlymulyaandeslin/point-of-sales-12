@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Error;
 use Inertia\Inertia;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Transaction;
-use Error;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -140,6 +141,7 @@ class TransactionController extends Controller
 
             $transaction = Transaction::create([
                 'user_id' => Auth::user()->id,
+                'kode_transaksi' => 'TRX-' . now()->format('YmdHis') . strtoupper(Str::random(4)),
                 'customer' => $customer,
                 'money_given' => $money_given,
                 'total_price' => $total_price,

@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId("user_id")->constrained("users");
+            $table->string("kode_transaksi")->unique();
             $table->string("customer");
             $table->float("money_given");
             $table->float("total_price");

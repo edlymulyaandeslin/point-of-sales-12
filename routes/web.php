@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LaporanKeuanganController;
 use App\Http\Controllers\TransactionController;
 
 Route::get('/', function () {
@@ -27,6 +28,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource("transactions", TransactionController::class);
     Route::resource("suppliers", SupplierController::class);
     Route::resource("purchases", PurchaseController::class);
+
+    Route::get('/laporan-keuangan', [LaporanKeuanganController::class, "index"])->name('laporan.index');
 });
 
 require __DIR__ . '/settings.php';

@@ -80,6 +80,7 @@ export interface Product {
 export interface Transaction {
     id: number;
     user_id: number;
+    kode_transaksi: string;
     customer: string;
     total_price: number;
     payment_method: string;

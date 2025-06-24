@@ -17,6 +17,7 @@ export default function Pos({ products, categories, paymentMethods }: { products
     const [cart, setCart] = useState<CartItem[]>([]);
     const [customerName, setCustomerName] = useState<string>('Umum');
     const [paymentMethod, setPaymentMethod] = useState<string>(paymentMethods[0]);
+    const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
     const filteredProducts: Product[] = selectedCategory === 'semua' ? products : products.filter((p) => p.category?.name === selectedCategory);
 
@@ -50,6 +51,8 @@ export default function Pos({ products, categories, paymentMethods }: { products
     const handleCheckout = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        setIsSubmit(true);
+
         const response = await axios.post(route('transactions.checkout'), {
             customer: customerName,
             money_given: cashGiven,
@@ -61,6 +64,7 @@ export default function Pos({ products, categories, paymentMethods }: { products
         const message = await response.data.message;
         if (is_success) {
             toast.success(message);
+            setIsSubmit(false);
             resetForm();
         } else {
             toast.error(message);
@@ -296,10 +300,10 @@ export default function Pos({ products, categories, paymentMethods }: { products
 
                             <Button
                                 onClick={handleCheckout}
-                                disabled={cart.length === 0 || customerName === '' || typeof cashGiven !== 'number' || cashGiven < total}
+                                disabled={cart.length === 0 || customerName === '' || typeof cashGiven !== 'number' || cashGiven < total || isSubmit}
                                 className="mt-2 w-full bg-green-600 hover:bg-green-700"
                             >
-                                Bayar Sekarang
+                                {isSubmit ? 'Membayar...' : 'Bayar Sekarang'}
                             </Button>
                         </div>
                     </div>

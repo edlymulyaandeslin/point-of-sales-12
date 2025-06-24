@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\User;
 use App\Models\Transaction;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,6 +23,7 @@ class TransactionFactory extends Factory
         $money = fake()->numberBetween(30000, 100000);
         return [
             "user_id" => mt_rand(1, $length_users),
+            "kode_transaksi" => 'TRX-' . now()->format('YmdHis') . strtoupper(Str::random(4)),
             "customer" => fake()->firstName() . ' ' . fake()->lastName(),
             "money_given" => $money,
             "total_price" => $money,
