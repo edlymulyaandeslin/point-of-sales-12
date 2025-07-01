@@ -5,7 +5,7 @@ import AppLayout from '@/layouts/app-layout';
 import { PaginatedData, type BreadcrumbItem, type Transaction } from '@/types';
 import { formatPrice, getPaymentMethodStyle, getTransactionStatusStyle } from '@/utils';
 import { Head, router, usePage } from '@inertiajs/react';
-import { DollarSign, Printer } from 'lucide-react';
+import { Coins, Printer } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
@@ -94,7 +94,7 @@ export default function LaporanKeuangan({ transactions }: { transactions: Pagina
 
                 <div className="flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
                     <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
-                        <DollarSign className="text-green-600" />
+                        <Coins className="text-yellow-500" />
                     </div>
                     <div>
                         <div className="text-sm text-zinc-500 dark:text-zinc-400">Total Pemasukan</div>

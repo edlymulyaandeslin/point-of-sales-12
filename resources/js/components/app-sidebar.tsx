@@ -2,8 +2,8 @@ import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
+import { SharedData, type NavItem } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 import { BaggageClaim, ChartPie, HandCoins, LayoutDashboard, LayoutGrid, ShoppingBasket, ShoppingCart, UserPlus, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -83,6 +83,27 @@ const mainNavItems: { label: string; items: NavItem[] }[] = [
 const footerNavItems: NavItem[] = [];
 
 export function AppSidebar() {
+    const { auth } = usePage<SharedData>().props;
+    const isAdmin = auth?.is_admin;
+
+    // Filter menu berdasarkan role
+    const filteredNavItems = mainNavItems
+        .map((section) => {
+            // Jika bukan admin, hanya izinkan "Dashboard" dan "Halaman Kasir"
+            if (!isAdmin) {
+                if (section.label !== 'General') return null;
+                const allowed = ['Dashboard', 'Halaman Kasir'];
+                return {
+                    ...section,
+                    items: section.items.filter((item) => allowed.includes(item.title)),
+                };
+            }
+
+            // Jika admin, tampilkan semua
+            return section;
+        })
+        .filter(Boolean);
+
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -98,7 +119,7 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                <NavMain items={filteredNavItems} />
             </SidebarContent>
 
             <SidebarFooter>

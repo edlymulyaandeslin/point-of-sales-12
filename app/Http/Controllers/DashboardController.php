@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -15,13 +16,24 @@ class DashboardController extends Controller
 
         $new_transaction = $transaction->latest()->paginate(3);
 
-        $total_penjualan = $transaction->where('status', 'completed')->sum('total_price');
+        $startDate = Carbon::now()->startOfMonth();
+        $endDate = Carbon::now()->endOfMonth();
 
-        $jumlah_transaksi_today = $transaction->whereDate('created_at', today())->count();
+        $total_penjualan = $transaction
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->where('status', 'completed')
+            ->sum('total_price');
 
-        $jumlah_barang_terjual = TransactionDetail::whereHas('transaction', function ($query) {
-            $query->where('status', 'completed');
-        })->distinct()->pluck('product_id')->count();
+        $jumlah_transaksi_today = $transaction
+            ->whereDate('created_at', today())
+            ->count();
+
+        $jumlah_barang_terjual = TransactionDetail::whereHas('transaction', function ($query) use ($startDate, $endDate) {
+            $query->where('status', 'completed')
+                ->whereBetween('created_at', [$startDate, $endDate]);
+        })->distinct()
+            ->pluck('product_id')
+            ->count();
 
         return Inertia::render('dashboard', [
             'new_transaction' => $new_transaction,

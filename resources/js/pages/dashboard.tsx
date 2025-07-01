@@ -2,7 +2,7 @@ import AppLayout from '@/layouts/app-layout';
 import { PaginatedData, Transaction, type BreadcrumbItem } from '@/types';
 import { formatPrice, formatSimpleDate, getTransactionStatusStyle } from '@/utils';
 import { Head, Link } from '@inertiajs/react';
-import { DollarSign, ShoppingBag, TrendingUp } from 'lucide-react';
+import { Coins, ShoppingBag, TrendingUp } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [{ title: 'Dashboard', href: '/dashboard' }];
 
@@ -22,11 +22,11 @@ export default function Dashboard({
             <Head title="Dashboard POS" />
 
             <div className="p-6">
-                <h2 className="mb-6 text-2xl font-bold">Ringkasan Penjualan</h2>
+                <h2 className="mb-6 text-2xl font-bold">Ringkasan Penjualan Bulan Ini</h2>
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {[
                         {
-                            icon: <DollarSign className="text-green-600" />,
+                            icon: <Coins className="text-yellow-500" />,
                             label: 'Total Penjualan',
                             value: formatPrice(total_penjualan),
                         },
