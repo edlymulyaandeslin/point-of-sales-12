@@ -74,16 +74,12 @@ export default function PrintLaporan({ transactions, totalIncome, dateFrom, date
             <body>
                 <div className="header">
                     <h1>LAPORAN KEUANGAN</h1>
-                    <p>POS Kasir Toko Sukses Abadi</p>
+                    <p>POS Kasir Super Lin</p>
                     {dateFrom && dateTo && (
                         <p>
                             Periode: <strong>{dateFrom}</strong> s/d <strong>{dateTo}</strong>
                         </p>
                     )}
-                </div>
-
-                <div className="info">
-                    <div className="total">Total Pemasukan: {formatPrice(totalIncome)}</div>
                 </div>
 
                 <table>
@@ -120,7 +116,14 @@ export default function PrintLaporan({ transactions, totalIncome, dateFrom, date
                 </table>
 
                 <div className="signature">
-                    <p>Dicetak pada: {new Date().toLocaleDateString('id-ID')}</p>
+                    <p>
+                        Dicetak pada:{' '}
+                        {new Date().toLocaleDateString('id-ID', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                        })}
+                    </p>
                     <br />
                     <p>_________________________</p>
                     <p>

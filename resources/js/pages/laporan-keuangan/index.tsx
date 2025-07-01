@@ -1,11 +1,11 @@
 import DataTable from '@/components/data-table';
-import PrintLaporan from '@/components/PrintLaporan';
+import PrintLaporan from '@/components/print-laporan';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 import { PaginatedData, type BreadcrumbItem, type Transaction } from '@/types';
 import { formatPrice, getPaymentMethodStyle, getTransactionStatusStyle } from '@/utils';
 import { Head, router, usePage } from '@inertiajs/react';
-import { Printer } from 'lucide-react';
+import { DollarSign, Printer } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
@@ -92,8 +92,14 @@ export default function LaporanKeuangan({ transactions }: { transactions: Pagina
                     </Button>
                 </div>
 
-                <div className="text-lg font-semibold">
-                    Total Pemasukan: <span className="text-green-600 dark:text-green-400">{formatPrice(totalIncome)}</span>
+                <div className="flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
+                        <DollarSign className="text-green-600" />
+                    </div>
+                    <div>
+                        <div className="text-sm text-zinc-500 dark:text-zinc-400">Total Pemasukan</div>
+                        <div className="text-lg font-semibold">{formatPrice(totalIncome)}</div>
+                    </div>
                 </div>
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -131,43 +137,41 @@ export default function LaporanKeuangan({ transactions }: { transactions: Pagina
                     </form>
                 </div>
 
-                <div className="w-full overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
-                    <DataTable
-                        data={transactions.data}
-                        from={transactions.from}
-                        to={transactions.to}
-                        total={transactions.total}
-                        links={transactions.links}
-                        columns={[
-                            {
-                                title: 'Tanggal',
-                                render: (t) => <span className="text-sm">{new Date(t.created_at).toLocaleDateString('id-ID')}</span>,
+                <DataTable
+                    data={transactions.data}
+                    from={transactions.from}
+                    to={transactions.to}
+                    total={transactions.total}
+                    links={transactions.links}
+                    columns={[
+                        {
+                            title: 'Tanggal',
+                            render: (t) => <span className="text-sm">{new Date(t.created_at).toLocaleDateString('id-ID')}</span>,
+                        },
+                        {
+                            title: 'Customer',
+                            render: (t) => <span className="text-sm">{t.customer}</span>,
+                        },
+                        {
+                            title: 'Metode Pembayaran',
+                            render: (t) => {
+                                const { label, className } = getPaymentMethodStyle(t.payment_method);
+                                return <span className={`rounded px-2 py-1 text-xs font-medium ${className}`}>{label}</span>;
                             },
-                            {
-                                title: 'Customer',
-                                render: (t) => <span className="text-sm">{t.customer}</span>,
+                        },
+                        {
+                            title: 'Total',
+                            render: (t) => <span className="text-sm font-semibold">{formatPrice(t.total_price)}</span>,
+                        },
+                        {
+                            title: 'Status',
+                            render: (t) => {
+                                const { label, className } = getTransactionStatusStyle(t.status);
+                                return <span className={`rounded px-2 py-1 text-xs font-medium ${className}`}>{label}</span>;
                             },
-                            {
-                                title: 'Metode Pembayaran',
-                                render: (t) => {
-                                    const { label, className } = getPaymentMethodStyle(t.payment_method);
-                                    return <span className={`rounded px-2 py-1 text-xs font-medium ${className}`}>{label}</span>;
-                                },
-                            },
-                            {
-                                title: 'Total',
-                                render: (t) => <span className="text-sm font-semibold">{formatPrice(t.total_price)}</span>,
-                            },
-                            {
-                                title: 'Status',
-                                render: (t) => {
-                                    const { label, className } = getTransactionStatusStyle(t.status);
-                                    return <span className={`rounded px-2 py-1 text-xs font-medium ${className}`}>{label}</span>;
-                                },
-                            },
-                        ]}
-                    />
-                </div>
+                        },
+                    ]}
+                />
             </div>
         </AppLayout>
     );
