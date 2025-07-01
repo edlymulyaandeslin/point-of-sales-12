@@ -62,7 +62,6 @@ export default function Index({ products }: { products: PaginatedData<Product> }
                         + Tambah Produk
                     </Link>
                 </div>
-
                 <input
                     type="text"
                     placeholder="Cari nama produk..."
