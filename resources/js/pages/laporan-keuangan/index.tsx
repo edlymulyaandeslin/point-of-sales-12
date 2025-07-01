@@ -19,12 +19,17 @@ export default function LaporanKeuangan({ transactions }: { transactions: Pagina
         date_to?: string;
     }>();
 
-    const [search, setSearch] = useState(props.search);
+    const [search, setSearch] = useState(props.search || '');
     const [dateFrom, setDateFrom] = useState(props.date_from || '');
     const [dateTo, setDateTo] = useState(props.date_to || '');
+    const [isFirstLoad, setIsFirstLoad] = useState(true);
 
     // Debounced Search
     useEffect(() => {
+        if (isFirstLoad) {
+            setIsFirstLoad(false);
+            return; // skip saat load pertama
+        }
         const timeout = setTimeout(() => {
             const query: Record<string, any> = { search };
 
